@@ -16,19 +16,21 @@ with open('data/features.json', 'r') as f:
 
 y_df = [1] * len(df)
 X_train, X_test, y_train, y_test = train_test_split(
-    df, y_df, test_size=0.2, random_state=42, stratify=y_df
+    df, y_df, test_size=0.2, random_state=42
 )
 
 random.seed(42)
-G=nx.from_pandas_edgelist(X_train,'from','to')
-communities_list=nx.community.louvain_communities(G, seed=42)
+G=nx.from_pandas_edgelist(X_train,'from','to',create_using=nx.DiGraph)
+G_un=nx.from_pandas_edgelist(X_train,'from','to')
+communities_list=nx.community.louvain_communities(G_un, seed=42)
 com = {}
 for com_id, community in enumerate(communities_list):
     for user_id in community:
         com[user_id] = com_id
 
 df_all = pd.DataFrame({
-    'connections': dict(G.degree()),
+    'followers': dict(G.in_degree()),
+    'following': dict(G.out_degree()),
     'rate': nx.pagerank(G),
     'community': com
 }).join(df_profiles[['days', 'mature', 'views', 'partner']])
@@ -45,12 +47,14 @@ all_users = list(df_all.index)
 def get_pair_features(u1, u2):
     if u1 not in G.nodes() or u2 not in G.nodes():
         return [0, 0, 0, 0, 0, 0, 0, 0, 0]
-    common_friends = len(nx.common_neighbors(G, u1, u2))
+    common_followers = len(set(G.predecessors(u1))&set(G.predecessors(u2)))
+    common_following = len(set(G.successors(u1))&set(G.successors(u2)))
     same_comm = 1 if df_all.loc[u1, 'community'] == df_all.loc[u2, 'community'] else 0
     both_mature = 1 if df_all.loc[u1, 'mature'] == df_all.loc[u2, 'mature'] else 0
     both_partner = 1 if df_all.loc[u1, 'partner'] == df_all.loc[u2, 'partner'] else 0
     views_diff = abs(df_all.loc[u1, 'views'] - df_all.loc[u2, 'views'])
-    connections_diff = abs(df_all.loc[u1, 'connections'] - df_all.loc[u2, 'connections'])
+    followers_diff = abs(df_all.loc[u1, 'followers'] - df_all.loc[u2, 'followers'])
+    following_diff = abs(df_all.loc[u1, 'following'] - df_all.loc[u2, 'following'])
     rate_diff = abs(df_all.loc[u1, 'rate'] - df_all.loc[u2, 'rate'])
     days_diff = abs(df_all.loc[u1,'days'] - df_all.loc[u2,'days'])
     try:
@@ -58,7 +62,7 @@ def get_pair_features(u1, u2):
     except KeyError:
         common_interests = 0
 
-    return [common_friends, same_comm, both_mature, both_partner, views_diff, connections_diff, rate_diff, days_diff, common_interests]
+    return [common_followers,common_following, same_comm, both_mature, both_partner, views_diff, followers_diff,following_diff, rate_diff, days_diff, common_interests]
 
 for index, row in X_train.iterrows():
     u1 = row['from']
@@ -94,8 +98,8 @@ while len(X_ts) < positive_count * 2:
         X_ts.append(features)
         y_ts.append(0)
 
-col = ['common_friends', 'same_comm', 'both_mature', 'both_partner',
-       'views_diff', 'connections_diff', 'rate_diff', 'days_diff', 'common_interests']
+col = ['common_followers','common_following', 'same_comm', 'both_mature', 'both_partner',
+       'views_diff', 'followers_diff','following_diff', 'rate_diff', 'days_diff', 'common_interests']
 
 X_train_df = pd.DataFrame(X_tr, columns=col)
 y_train_df = pd.Series(y_tr)
@@ -108,8 +112,8 @@ print(f"Обучение: {X_train_df.shape[0]} пар, Валидация: {X_t
 
 
 model = CatBoostClassifier(
-    iterations=500,
-    learning_rate=0.05,
+    iterations=600,
+    learning_rate=0.03,
     depth=6,
     eval_metric='AUC',
     random_seed=42,
