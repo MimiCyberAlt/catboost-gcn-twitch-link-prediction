@@ -139,8 +139,8 @@ model = CatBoostClassifier(
 
 ### 1. Клонировать репозиторий
 ```bash
-git clone https://github.com/MimiCyberAlt/catboost&gcn-twitch-link-prediction.git
-cd catboost&gcn-twitch-link-prediction
+git clone https://github.com/MimiCyberAlt/catboost-gcn-twitch-link-prediction.git
+cd catboost-gcn-twitch-link-prediction
 ```
 
 ### 2. Установить зависимости
@@ -164,7 +164,7 @@ python gcn_link_prediction.py  # GCN
 ## 📁 Структура проекта
 
 ```
-catboost&gcn-twitch-link-prediction/
+catboost-gcn-twitch-link-prediction/
 │
 ├── README.md                 # Описание проекта
 ├── requirements.txt          # Зависимости
