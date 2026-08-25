@@ -21,7 +21,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 random.seed(42)
 G=nx.from_pandas_edgelist(X_train,'from','to',create_using=nx.DiGraph)
-G_full=nx.from_pandas_edgelist(X_train,'from','to',create_using=nx.DiGraph)
+G_full=nx.from_pandas_edgelist(df,'from','to',create_using=nx.DiGraph)
 G_un=nx.from_pandas_edgelist(X_train,'from','to')
 communities_list=nx.community.louvain_communities(G_un, seed=42)
 com = {}
@@ -47,7 +47,7 @@ all_users = list(df_all.index)
 
 def get_pair_features(u1, u2):
     if u1 not in G.nodes() or u2 not in G.nodes():
-        return [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        return [0]*11
     common_followers = len(set(G.predecessors(u1))&set(G.predecessors(u2)))
     common_following = len(set(G.successors(u1))&set(G.successors(u2)))
     same_comm = 1 if df_all.loc[u1, 'community'] == df_all.loc[u2, 'community'] else 0
