@@ -113,7 +113,7 @@ print(f"Обучение: {X_train_df.shape[0]} пар, Валидация: {X_t
 
 
 model = CatBoostClassifier(
-    iterations=600,
+    iterations=500,
     learning_rate=0.03,
     depth=6,
     eval_metric='AUC',
