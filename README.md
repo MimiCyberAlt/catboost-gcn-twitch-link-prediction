@@ -168,16 +168,15 @@ catboost-gcn-twitch-link-prediction/
 │
 ├── README.md                 # Описание проекта
 ├── requirements.txt          # Зависимости
-├── link_prediction.py        # CatBoost
+├── cat_prediction.py        # CatBoost
 ├── gcn_link_prediction.py    # GCN
+└── feature_importance.png
 │
 ├── data/                     # Данные (не включены)
 │   ├── edges.csv
 │   ├── target.csv
-│   └── features.json
-│
-└── results/
-    └── feature_importance.png
+    └── features.json
+    
 ```
 
 ---
