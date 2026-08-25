@@ -74,7 +74,7 @@ model = TwitchLinkPrediction(in_channels=entire_graph.num_features, hidden_chann
 optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 criterion = torch.nn.BCEWithLogitsLoss()
 best_roc_auc=0
-best_state=None
+
 for epoch in range(1,211):
   model.train()
   optimizer.zero_grad()
@@ -83,6 +83,7 @@ for epoch in range(1,211):
   loss.backward()
   torch.nn.utils.clip_grad_norm_(model.parameters(),max_norm=1.0)
   optimizer.step()
+
   if epoch % 10 == 0:
       model.eval()
       with torch.no_grad():
@@ -93,6 +94,7 @@ for epoch in range(1,211):
           if test_auc>best_roc_auc:
             best_roc_auc=test_auc
           print(f"Эпоха {epoch:03d} | Train Loss: {loss.item():.4f} | Test ROC-AUC: {test_auc:.4f}")
+
 total_time = time.time() - start_time
 print(f"\n Общее время выполнения: {total_time:.2f} секунд")
 print(f"\n Лучший ROC-AUC: {best_roc_auc:.4f}")
