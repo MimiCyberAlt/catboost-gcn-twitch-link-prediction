@@ -21,6 +21,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 random.seed(42)
 G=nx.from_pandas_edgelist(X_train,'from','to',create_using=nx.DiGraph)
+G_full=nx.from_pandas_edgelist(X_train,'from','to',create_using=nx.DiGraph)
 G_un=nx.from_pandas_edgelist(X_train,'from','to')
 communities_list=nx.community.louvain_communities(G_un, seed=42)
 com = {}
@@ -76,7 +77,7 @@ while len(X_tr) < positive_count * 2:
     u1 = random.choice(all_users)
     u2 = random.choice(all_users)
 
-    if u1 != u2 and not G.has_edge(u1, u2):
+    if u1 != u2 and not G_full.has_edge(u1, u2):
         features = get_pair_features(u1, u2)
         X_tr.append(features)
         y_tr.append(0)
@@ -93,7 +94,7 @@ while len(X_ts) < positive_count * 2:
     u1 = random.choice(all_users)
     u2 = random.choice(all_users)
 
-    if u1 != u2 and not G.has_edge(u1, u2):
+    if u1 != u2 and not G_full.has_edge(u1, u2):
         features = get_pair_features(u1, u2)
         X_ts.append(features)
         y_ts.append(0)
