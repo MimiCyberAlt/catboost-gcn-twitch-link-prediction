@@ -18,13 +18,13 @@ from torch_geometric.nn import GCNConv
 
 seed_everything(42)
 
-df=pd.read_csv('edges.csv')
+df=pd.read_csv('data/edges.csv')
 
-df_profiles=pd.read_csv('target.csv').set_index('new_id')
+df_profiles=pd.read_csv('data/target.csv').set_index('new_id')
 df_profiles['partner'] = df_profiles['partner'].astype(int)
 df_profiles['mature'] = df_profiles['mature'].astype(int)
 
-with open('features.json', 'r') as f:
+with open('data/features.json', 'r') as f:
     features_json = json.load(f)
 features_clean={int(k): v for k, v in features_json.items()}
 df_features = pd.DataFrame.from_dict(features_clean, orient='index').fillna(0)
