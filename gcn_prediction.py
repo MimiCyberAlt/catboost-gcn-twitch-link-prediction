@@ -1,6 +1,5 @@
 import time
 start_time = time.time()
-!pip install -q torch-geometric
 
 import json
 import random
